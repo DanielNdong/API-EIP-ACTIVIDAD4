@@ -1,0 +1,85 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Api - MEJOR RUTA | GOOGLE MAPS | Daniel Aquilino Ndong</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATrqkwPZIr3DFiks-OEfdLcVYr5uLxuWA&libraries=places"></script>
+    <style>
+        #map {
+            width: 1000px;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <form id="routeForm">
+        <label for="start">Punto de inicio:</label>
+        <input type="text" id="start" name="start"><br><br>
+        
+        <label for="end">Punto de destino:</label>
+        <input type="text" id="end" name="end"><br><br>
+        
+        <label for="waypoints">Puntos intermedios (separados por coma):</label>
+        <input type="text" id="waypoints" name="waypoints"><br><br>
+        
+        <input type="submit" value="Planificar ruta">
+    </form>
+    <br><br><br>
+
+    <div id="map"></div>
+
+
+<script>
+// Función que se ejecuta cuando se envía el formulario
+function calculateAndDisplayRoute() {
+  // Obtener los valores de los campos de inicio, destino y puntos intermedios
+  var start = document.getElementById('start').value;
+  var end = document.getElementById('end').value;
+  var waypoints = document.getElementById('waypoints').value.split(",");
+
+  // Crear una instancia de DirectionsService y DirectionsRenderer
+  var directionsService = new google.maps.DirectionsService();
+  var directionsRenderer = new google.maps.DirectionsRenderer();
+
+  // Configurar opciones del mapa
+  var mapOptions = {
+    zoom: 10,
+    center: { lat: 0, lng: 0 }
+  };
+
+  // Crear un mapa y asignarlo al elemento con el ID "map"
+  var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+  directionsRenderer.setMap(map);
+
+  // Configurar la solicitud de ruta
+  var request = {
+    origin: start,
+    destination: end,
+    waypoints: waypoints.map(function(waypoint) {
+      return { location: waypoint.trim(), stopover: true };
+    }),
+    optimizeWaypoints: true,
+    travelMode: 'DRIVING'
+  };
+
+  // Calcular la ruta utilizando la API de DirectionsService
+  directionsService.route(request, function(result, status) {
+    if (status == 'OK') {
+      // Mostrar la ruta en el mapa utilizando la API de DirectionsRenderer
+      directionsRenderer.setDirections(result);
+    } else {
+      // Mostrar un mensaje de error si no se pudo calcular la ruta
+      alert('No se pudo calcular la ruta: ' + status);
+    }
+  });
+}
+
+// Agregar evento de escucha al formulario
+document.getElementById("routeForm").addEventListener("submit", function(event) {
+  event.preventDefault(); // Evitar que el formulario se envíe automáticamente
+  calculateAndDisplayRoute();
+});
+    </script>
+</body>
+</html>
